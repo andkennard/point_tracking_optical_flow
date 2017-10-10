@@ -1,11 +1,7 @@
 %PARAMETERS FOR POINT TRACKING BY OPTICAL FLOW
+function Params = Defaults()
+%% Basic information
 
-%% Basic movie information
-%Path to movie location
-Params.pathName = 'input';
-Params.fileName = '20x_1xopt_Wounding_fish_2_Max.tif';
-%If testing algorithm, choose an earlier frame to stop tracking.
-%Set to 0 to track the whole movie
 Params.finalFrameForTesting = 0;
 
 %% Point Detection
@@ -19,7 +15,7 @@ Params.detectPoints = @detectMinEigenFeatures;
 % https://www.mathworks.com/help/vision/ref/vision.pointtracker-system-object.html
 
 %Preprocess images with this function (in path) prior to tracking
-Params.preprocessImage = @trackingImPreprocessBackgroundSub;
+Params.preprocessImage = @preprocessImageWithBackgroundSubtraction;
 
 Params.trackingMaxBidirectionalError = 1;
 Params.trackingBlockSize              = [41,41];
@@ -53,9 +49,6 @@ Params.pointDensityThreshold = 0.008;
 Params.trackMargin = 1;
 
 if Params.trackMargin == 1
-    % Specify the margin mask file
-    Params.initialMarginMask = imread(fullfile(Params.pathName,...
-                               'Margin_Mask.tif'));
     % Specify the radius of the alpha-shape used to geometrically define
     % the margin in subsequent frames
     Params.alphaRadius = 20;

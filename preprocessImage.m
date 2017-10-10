@@ -1,4 +1,4 @@
-function im_p = trackingImPreprocess(im)
+function im_p = preprocessImage(im)
 %%% Function to preprocess images before tracking. 
 
 %Currently use a median filter with a 3x3 window to remove hot pixels,

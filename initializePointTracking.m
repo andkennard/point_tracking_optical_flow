@@ -1,4 +1,4 @@
-function TrackedPointStruct = initializePointTracking(reader,Params)
+function [tracker,TrackedPointStruct] = initializePointTracking(reader,Params)
 % initializepointtracking: Set up point tracking in the first frame
 
 initialImage = bf_getFrame(reader,1,1,1);
