@@ -1,4 +1,4 @@
-function [pts, validity] = correctOutOfBoundPts(old_pts,old_valid,sz)
+function [pts, validity] = correctOutOfBoundPoints(old_pts,old_valid,sz)
 %%% CORRECTOUTOFBOUNDPTS clean up points tracked out of image region
 %%% During the tracking process some points will be assigned to positions
 %%% outside of the image. Correct these (i.e. bring coordinates in bounds)

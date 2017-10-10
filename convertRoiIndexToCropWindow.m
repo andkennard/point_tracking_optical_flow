@@ -1,4 +1,4 @@
-function crop_window = binind2pixelcrop(bin_sz,edges_x,edges_y,iB)
+function cropWindow = convertRoiIndexToCropWindow(roiSize,edgesX,edgesY,roiLinearIndex)
 %%% BININD2PIXELcrop Get Pixel crop window (xy) from linear bin index.
 %%% Similar to ind2sub, convert from the linear index of a
 %%% binned image into the XY pixel coordinates of the image. 
@@ -13,7 +13,7 @@ function crop_window = binind2pixelcrop(bin_sz,edges_x,edges_y,iB)
 %%% to two bin indices.
 
 % Error handling
-assert(iB<=bin_sz(1) * bin_sz(2),'bin index lies outside bin_size range');
+assert(roiLinearIndex<=roiSize(1) * roiSize(2),'bin index lies outside bin_size range');
 
 
 %edges are for assuming continuous space values ranging from e.g. 0 to
@@ -21,19 +21,19 @@ assert(iB<=bin_sz(1) * bin_sz(2),'bin index lies outside bin_size range');
 %requires some transformation of the edges: everything increases by 1
 %except the last index.
 
-edges_x(1:end-1) = edges_x(1:end-1) + 1;
+edgesX(1:end-1) = edgesX(1:end-1) + 1;
 
-edges_y(1:end-1) = edges_y(1:end-1) + 1;
+edgesY(1:end-1) = edgesY(1:end-1) + 1;
 
 
 %Convert linear index into subscripts (for the bins)
-[iBY,iBX] = ind2sub(bin_sz,iB);
+[roiIndexY,roiIndexX] = ind2sub(roiSize,roiLinearIndex);
 
 %Get the dimensions of the crop window from the edge lines (remember
 %bin k goes from edge(k)<= bin(k) < edge(k+1)
-iX = edges_x(iBX);
-width = edges_x(iBX+1) - iX - 1;
-iY = edges_y(iBY);
-height = edges_y(iBY+1) - iY - 1;
+iX     = edgesX(roiIndexX    );
+width  = edgesX(roiIndexX + 1) - iX - 1;
+iY     = edgesY(roiIndexY    );
+height = edgesY(roiIndexY + 1) - iY - 1;
 
-crop_window = [iX iY width height];
+cropWindow = [iX iY width height];

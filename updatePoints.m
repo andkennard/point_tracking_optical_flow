@@ -1,24 +1,27 @@
-function newpoint_struct = updatePoints(oldpoint_struct,im,params)
+function newPointStruct = updatePoints(oldPointStruct,frame,Params)
     
-    [sizeY,sizeX] = size(im);
-    newpoint_struct = struct('coords',[],...
-                    'validity',[],...
-                    'ID',[],...
-                    'is_margin',[]);
+    [sizeY,sizeX] = size(frame);
+    newPointStruct = struct('coordinates',[],...
+                            'isTracked',  [],...
+                            'ID',         []);
 
-    bin_size_x = floor(sizeX/params.num_bins(1));
-    bin_size_y = floor(sizeY/params.num_bins(2));
+    roiSizeX = floor(sizeX/Params.nRois(2));
+    roiSizeY = floor(sizeY/Params.nRois(1));
     
-    allcoords = oldpoint_struct.coords;
-    allvalid  = oldpoint_struct.validity;
-    allID     = oldpoint_struct.ID;
-    allismargin = oldpoint_struct.is_margin;
-    num_margin_pts = sum(allismargin);
-    goodcoords =  allcoords(allvalid,:);
+    coordinatesArray  = oldPointStruct.coordinates;
+    isTracked         = oldPointStruct.isTracked;
+    idArray           = oldPointStruct.ID;
+    if Params.trackMargin
+        isMargin      = oldPointStruct.isMargin;
+        nMarginPoints = sum(isMargin);
+    end
+
+    trackedCoordinatesArray =  coordinatesArray(isTracked,:);
     
     %Generate an alpha shape for the margin points in this frame.
-    if params.track_margin
-        shp = alphaShape(allcoords(allismargin,:),params.alphaParam);
+    if Params.trackMargin
+        marginShape = alphaShape(coordinatesArray(isMargin,:),...
+                                 Params.alphaRadius);
     end
     %{
     %Update allismargin to include points that may now be on the margin
@@ -29,45 +32,58 @@ function newpoint_struct = updatePoints(oldpoint_struct,im,params)
     %}
     
     %Bin points into a 2D grid, and figure out how many points lie in each
-    %point of the 2D grid (and how many pixels are in each sector of the
+    %roi of the 2D grid (and how many pixels are in each sector of the
     %grid)
-
-    [n_valid,bin_areas,edges_x,edges_y] = getNumValidPoints(goodcoords,[sizeX,sizeY],[bin_size_x,bin_size_y]);
-    %Get the point density by dividing by the total number of pixels in
-    %that bin
-    point_density = n_valid ./ bin_areas;
-    %Identify which bins need more points generated
-    need_more_points = find(point_density < params.point_density_thresh);
+%     [nTrackedPointsPerRoi,...
+%      nPixelsPerRoi,       ...
+%      edgePositionsX,      ...
+%      edgePositionsY]          = getNumValidPoints(trackedCoordinatesArray,...
+%                                                  [sizeX,sizeY],           ...
+%                                                  [roiSizeX,roiSizeY]);
+    %Compute point density by dividing by the bin area (in pixels)
+    pointDensityPerRoi = calculatePointDensityInGrid(trackedCoordinatesArray,...
+                                                     size(frame),...
+                                                     [roiSizeY,roiSizeX]);
+    
+    %Identify which ROIs need more points generated
+    needMorePoints  = find(pointDensityPerRoi < Params.pointDensityThreshold);
     %%
-    for k = 1:numel(need_more_points);
-        newpts = generateNewPoints(im,need_more_points(k),edges_x,edges_y,size(n_valid));
-        if ~isempty(newpts)
-        assert(isa(newpts,'double'),sprintf('newpts is of type %s',class(newpts)));
-        
-        [num_newpts, ~] = size(newpts);
-        %Update point list
-        allcoords = [allcoords ; newpts];
-        %Update validity, all new points start off valid
-        allvalid = [allvalid; true(num_newpts,1)];
-        %Give these points unique IDs
-        start_idx = max(allID)+1;
-        stop_idx = start_idx + num_newpts - 1;
-        newIDs = uint32((start_idx:stop_idx)');
-        allID = [allID ; newIDs];
-        %Check if points are in the margin
-        if params.track_margin
-            new_ismargin = inShape(shp,newpts);
-            allismargin = [allismargin ; new_ismargin];
-        end
+    for k = 1:numel(needMorePoints);
+        coordinatesArrayNewPoints = generateNewPoints(frame,            ...
+                                                      needMorePoints(k),...
+                                                      edgePositionsX,   ...
+                                                      edgePositionsY,   ...
+                                                      size(nTrackedPointsPerRoi));
+        if ~isempty(coordinatesArrayNewPoints) %Some points must have been generated first!
+            assert(isa(coordinatesArrayNewPoints,'double'),...
+                   sprintf('newpts is of type %s',...
+                           class(coordinatesArrayNewPoints)));
+
+            [nNewPoints, ~]  = size(coordinatesArrayNewPoints);
+            idArrayNewPoints = generateNewPointIds(max(idArray),nNewPoints);
+            %Append new point info to existing arrays
+            coordinatesArray = [coordinatesArray ; coordinatesArrayNewPoints];
+            %All new points are tracked initially
+            isTracked        = [isTracked ;        true(nNewPoints,1)];
+            idArray          = [idArray ;          idArrayNewPoints];
+            %Check if points are in the margin
+            if Params.trackMargin
+                isMarginNewPoints = inShape(marginShape,...
+                                            coordinatesArrayNewPoints);
+                isMargin     = [isMargin ;         isMarginNewPoints];
+            end
         end
     end
     
-    [allpts_corrected,allvalid_corrected] = correctOutOfBoundPts(allcoords,allvalid,size(im));
-    newpoint_struct.coords = allpts_corrected;
-    newpoint_struct.validity = allvalid_corrected;
-    newpoint_struct.ID = allID;
+    [coordinatesArrayInBounds,...
+     isTrackedInBounds]           = correctOutOfBoundPts(coordinatesArray,...
+                                                         isTracked,       ...
+                                                         size(frame));
+    newPointStruct.coordinates  = coordinatesArrayInBounds;
+    newPointStruct.isTracked    = isTrackedInBounds;
+    newPointStruct.ID           = idArray;
     %Update is_margin (once is_margin is implemented)
-    if params.track_margin
-        newpoint_struct.is_margin = allismargin;
+    if Params.track_margin
+        newPointStruct.isMargin = isMargin;
     end
 end    

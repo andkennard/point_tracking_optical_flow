@@ -1,4 +1,4 @@
-function newpts = generateNewPoints(im,bin_idx,edges_x,edges_y,bin_sz)
+function newpts = generateNewPoints(frame,roiIndex,roiSize,Params)
 %%% GENERATENEWPOINTS detect new feature points in a specified image
 %%% sub-region.
 %%% Given an image im, which has been split into a grid with edges given by
@@ -6,13 +6,21 @@ function newpts = generateNewPoints(im,bin_idx,edges_x,edges_y,bin_sz)
 %%% in the bin specified by the linear index bin_idx (i.e. referring to a
 %%% particular bin).
 
+imageSize = size(frame);
+[EdgePositionsAlongDimension,...
+ RoiLengthsAlongDimension,...
+ nRoisAlongDimension]            = createGridForArray(roiSize,imageSize);
+
 %Generate crop window from bin coordinates
-crop_window = binind2pixelcrop(bin_sz,edges_x,edges_y,bin_idx);
-iX = crop_window(1);
-iY = crop_window(2);
+cropWindow = convertRoiIndexToCropWindow(roiSize,                       ...
+                                         EdgePositionsAlongDimension{2},...
+                                         EdgePositionsAlongDimension{1},...
+                                         roiIndex);
+iX = cropWindow(1);
+iY = cropWindow(2);
 
 %Crop image
-im_cropped = imcrop(im,crop_window);
+im_cropped = imcrop(frame,cropWindow);
 %Test if the region is all 0s, in which case no new points should be
 %generated
 if ~isempty(find(im_cropped,1))
