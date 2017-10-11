@@ -42,7 +42,7 @@
 % 
 % * |*trackingMaxBidirectionalError*| : (_uint8_) Forward-backward error
 % threshold. Generally 1 or 2 pixels
-% * |*trackingBlockSize*| : (_uint32_) Neighborhood size to use for
+% * |*trackingBlockSizeVal*| : (_uint32_) Neighborhood size to use for
 % tracking. Must be an odd integer, minimum value of 5. Increasing the size
 % of the neighborhood increases computation time but can also increase
 % tracking accuracy. Default is 31 (pixels)
