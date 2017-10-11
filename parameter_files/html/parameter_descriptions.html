@@ -1,0 +1,163 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Description of Parameters for Tracking via Optical Flow algorithm</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-10-10"><meta name="DC.source" content="parameter_descriptions.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Description of Parameters for Tracking via Optical Flow algorithm</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Movie Info</a></li><li><a href="#2">File I/O</a></li><li><a href="#3">Point Detection</a></li><li><a href="#4">Tracking by Optical Flow (Lucas-Kanade Method)</a></li><li><a href="#5">Adding More Points</a></li><li><a href="#6">Wound Margin Tracking</a></li></ul></div><h2>Movie Info<a name="1"></a></h2><div><ul><li><tt><b>movieName</b></tt>: (<i>String</i>) Keyword to use for referencing movie.</li><li><tt><b>acquisitionDate</b></tt>: (<i>Datetime</i>) Date of the experiment</li></ul></div><h2>File I/O<a name="2"></a></h2><div><ul><li><tt><b>inputPathName</b></tt> : (<i>String</i>) Path to input movie file. Absolute (preferred) or relative to the current working directory when running the code.</li><li><tt><b>inputFileName</b></tt> : (<i>String</i>) Base filename for the movie, with extension.</li><li><tt><b>outputPathName</b></tt> : (<i>String</i>) Path to dump output files.</li><li><tt><b>initialMarginMaskFileName</b></tt> : (<i>String, optional</i>) if tracking the wound margin, indicate the base filename for the mask of the wound margin in the first movie frame (with extension, filename relative to <tt>inputPathName</tt>)</li></ul></div><h2>Point Detection<a name="3"></a></h2><div><ul><li><tt><b>preprocessImageFunctionName</b></tt> : (<i>String</i>) Name of the MATLAB function that should be used to preprocess movie frames before point detection. Should be in the path. Currently this function is not allowed to take any arguments other than the frame itself.</li><li><tt><b>detectPointsFunctionName</b></tt> : (<i>String</i>) Name of the MATLAB function that should be used to detect points in the preprocessed movie frame. This can be one of the many feature-detection algorithms in MATLAB (such as <tt>detectMinEigenFeatures</tt>) or can be a custom function (or a wrapper to another function). If a custom function, it must take in only the image as an argument and return an object that has a Location field containing an <i>N x 2</i> array of the <i>[x,y]</i> coordinates of the detected points, e.g.:</li></ul></div><pre class="language-matlab">detectedPointObject      = @detectPointsFunctionName(frame); <span class="comment">% Detect points</span>
+                                                             <span class="comment">% with this function</span>
+detectedPointCoordinates = detectedPointObject.Location;
+</pre><h2>Tracking by Optical Flow (Lucas-Kanade Method)<a name="4"></a></h2><p>Details of the algorithm and its parameters can be found here: <a href="https://www.mathworks.com/help/vision/ref/vision.pointtracker-system-object.html">https://www.mathworks.com/help/vision/ref/vision.pointtracker-system-object.html</a>. For more detail into the algorithm itself, as well as the feature detector packaged as <tt>detectMinEigenFeatures</tt> in MATLAB, see the original article: <a href="http://www.ai.mit.edu/courses/6.891/handouts/shi94good.pdf">Shi and Tomasi. (1994). Good Features to Track. IEEE Proc. CVPR94</a></p><div><ul><li><tt><b>trackingMaxBidirectionalError</b></tt> : (<i>uint8</i>) Forward-backward error threshold. Generally 1 or 2 pixels</li><li><tt><b>trackingBlockSize</b></tt> : (<i>uint32</i>) Neighborhood size to use for tracking. Must be an odd integer, minimum value of 5. Increasing the size of the neighborhood increases computation time but can also increase tracking accuracy. Default is 31 (pixels)</li></ul></div><h2>Adding More Points<a name="5"></a></h2><p>Over time as points move or stop being tracked you may wish to add more points to track. This is done by looking at the density of points locally in sub-regions (or ROIs) of the image and adding more points in that region if the density is too low. These parameters cover that process.</p><div><ul><li><tt><b>nRoisRows</b></tt>, <tt><b>nRoisColumns</b></tt> : (<i>uint32</i>) How many ROIs to split the image up in each direction.</li><li><tt><b>pointDensityThreshold</b></tt> : (<i>float</i>) Density of points (points per pixel) that is needed to trigger adding more points in a ROI.</li></ul></div><p>It can be helpful to delay a certain number of frames before adding any new points, and then update points at a specified interval of frames thereafter. These paramaters are related to that.</p><div><ul><li><tt><b>pointUpdateDelay</b></tt> : (<i>uint32</i>) How many frames to delay before allowing the point update routine to run. Make this larger than the number of frames in the movie to skip adding points.</li><li><tt><b>pointUpdateInterval</b></tt> : (<i>uint32</i>) Interval at which the algorithm checks whether additional points are needed.</li></ul></div><h2>Wound Margin Tracking<a name="6"></a></h2><p>Determine whether a wound margin should be tracked or not. The wound margin is defined in the first movie frame by a manually determined mask.</p><div><ul><li><tt><b>trackMargin</b></tt> : (<i>Boolean</i>) Whether or not margin tracking should be enabled.</li><li><tt><b>alphaRadius</b></tt> : (<i>float</i>) In the first frame the wound margin is determined by a manually segmented mask of the wound. In subsequent frames the shape of the wound is described geometrically with an <a href="https://www.mathworks.com/help/matlab/ref/alphashape.html">alpha shape</a>. More detail on them can be found at <a href="https://en.wikipedia.org/wiki/Alpha_shape">Wikipedia</a>. The important parameter is the radius <img src="parameter_descriptions_eq14221827199139923399.png" alt="$\alpha$">, described by this parameter: 0 corresponds to no shape at all (distinct points), and <tt>Inf</tt> is identical to the convex hull. I have found success with a value of 20, though it is extremely empirical.</li></ul></div><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Description of Parameters for Tracking via Optical Flow algorithm
+
+%% Movie Info
+% * |*movieName*|: (_String_) Keyword to use for referencing movie.
+% * |*acquisitionDate*|: (_Datetime_) Date of the experiment
+%
+%% File I/O
+% * |*inputPathName*| : (_String_) Path to input movie file. Absolute
+% (preferred) or relative to the current working directory when running the
+% code.
+% * |*inputFileName*| : (_String_) Base filename for the movie, with extension.
+% * |*outputPathName*| : (_String_) Path to dump output files.
+% * |*initialMarginMaskFileName*| : (_String, optional_) if tracking the
+% wound margin, indicate the base filename for the mask of the wound margin
+% in the first movie frame (with extension, filename relative to
+% |inputPathName|)
+%
+%% Point Detection
+% * |*preprocessImageFunctionName*| : (_String_) Name of the MATLAB function
+% that should be used to preprocess movie frames before point detection.
+% Should be in the path. Currently this function is not allowed to take any
+% arguments other than the frame itself.
+% * |*detectPointsFunctionName*| : (_String_) Name of the MATLAB function
+% that should be used to detect points in the preprocessed movie frame.
+% This can be one of the many feature-detection algorithms in MATLAB (such
+% as |detectMinEigenFeatures|) or can be a custom function (or a wrapper to
+% another function). If a custom function, it must take in only the image
+% as an argument and return an object that has a Location field containing
+% an _N x 2_ array of the _[x,y]_ coordinates of the detected points, e.g.:
+%
+%   detectedPointObject      = @detectPointsFunctionName(frame); % Detect points
+%                                                                % with this function
+%   detectedPointCoordinates = detectedPointObject.Location;
+%
+%% Tracking by Optical Flow (Lucas-Kanade Method)
+% Details of the algorithm and its parameters can be found here: 
+% <https://www.mathworks.com/help/vision/ref/vision.pointtracker-system-object.html>.
+% For more detail into the algorithm itself, as well as the feature
+% detector packaged as |detectMinEigenFeatures| in MATLAB, see the original
+% article: <http://www.ai.mit.edu/courses/6.891/handouts/shi94good.pdf Shi
+% and Tomasi. (1994). Good Features to Track. IEEE Proc. CVPR94>
+% 
+% * |*trackingMaxBidirectionalError*| : (_uint8_) Forward-backward error
+% threshold. Generally 1 or 2 pixels
+% * |*trackingBlockSize*| : (_uint32_) Neighborhood size to use for
+% tracking. Must be an odd integer, minimum value of 5. Increasing the size
+% of the neighborhood increases computation time but can also increase
+% tracking accuracy. Default is 31 (pixels)
+%
+%% Adding More Points
+% Over time as points move or stop being tracked you may wish to add more
+% points to track. This is done by looking at the density of points locally
+% in sub-regions (or ROIs) of the image and adding more points in that region
+% if the density is too low. These parameters cover that process.
+%
+% * |*nRoisRows*|, |*nRoisColumns*| : (_uint32_) How many ROIs to split the image up in each
+% direction. 
+% * |*pointDensityThreshold*| : (_float_) Density of points (points per
+% pixel) that is needed to trigger adding more points in a ROI.
+% 
+% It can be helpful to delay a certain number of frames before adding any
+% new points, and then update points at a specified interval of frames 
+% thereafter. These paramaters are related to that.
+%
+% * |*pointUpdateDelay*| : (_uint32_) How many frames to delay before
+% allowing the point update routine to run. Make this larger than the
+% number of frames in the movie to skip adding points.
+% * |*pointUpdateInterval*| : (_uint32_) Interval at which the algorithm
+% checks whether additional points are needed.
+% 
+%% Wound Margin Tracking
+% Determine whether a wound margin should be tracked or not. The wound
+% margin is defined in the first movie frame by a manually determined mask.
+%
+% * |*trackMargin*| : (_Boolean_) Whether or not margin tracking should be
+% enabled.
+% * |*alphaRadius*| : (_float_) In the first frame the wound margin is determined
+% by a manually segmented mask of the wound. In subsequent frames the shape
+% of the wound is described geometrically with an
+% <https://www.mathworks.com/help/matlab/ref/alphashape.html alpha shape>.
+% More detail on them can be found at
+% <https://en.wikipedia.org/wiki/Alpha_shape Wikipedia>. The important
+% parameter is the radius $\alpha$, described by this parameter: 0
+% corresponds to no shape at all (distinct points), and |Inf| is identical
+% to the convex hull. I have found success with a value of 20, though it is
+% extremely empirical.
+%
+
+##### SOURCE END #####
+--></body></html>
