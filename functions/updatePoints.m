@@ -45,25 +45,29 @@ function newPointStruct = updatePoints(oldPointStruct,frame,Params)
             assert(isa(coordinatesArrayNewPoints,'double'),...
                    sprintf('newpts is of type %s',...
                            class(coordinatesArrayNewPoints)));
-
-            [nNewPoints, ~]  = size(coordinatesArrayNewPoints);
+            %Throw out points that are too close to already tracked points
+            coordinatesArrayNewPointsFiltered = removeOverlappingPoints(  ...
+                                                coordinatesArrayNewPoints,...
+                                                trackedCoordinatesArray);
+            [nNewPoints, ~]  = size(coordinatesArrayNewPointsFiltered);
             idArrayNewPoints = generateNewPointIds(max(idArray),nNewPoints);
             %Append new point info to existing arrays
-            coordinatesArray = [coordinatesArray ; coordinatesArrayNewPoints];
+            coordinatesArray = [coordinatesArray ; ...
+                                coordinatesArrayNewPointsFiltered];
             %All new points are tracked initially
             isTracked        = [isTracked ;        true(nNewPoints,1)];
             idArray          = [idArray ;          idArrayNewPoints];
             %Check if points are in the margin
             if Params.trackMargin
                 isMarginNewPoints = inShape(marginShape,...
-                                            coordinatesArrayNewPoints);
+                                            coordinatesArrayNewPointsFiltered);
                 isMargin     = [isMargin ;         isMarginNewPoints];
             end
         end
     end
     
     [coordinatesArrayInBounds,...
-     isTrackedInBounds]           = correctOutOfBoundPts(coordinatesArray,...
+     isTrackedInBounds]           = correctOutOfBoundPoints(coordinatesArray,...
                                                          isTracked,       ...
                                                          size(frame));
     newPointStruct.coordinates  = coordinatesArrayInBounds;

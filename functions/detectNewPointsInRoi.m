@@ -1,5 +1,5 @@
 function detectedPointArray = detectNewPointsInRoi(frame,roiIndex,Params)
-%%% GENERATENEWPOINTS detect new feature points in a specified image
+%%% detectNewPointsinRoi detect new feature points in a specified image
 %%% sub-region.
 %%% Given an image im, which has been split into a grid with edges given by
 %%% the vector edges (N x 2, edges_x,edges_y), generate more feature points
