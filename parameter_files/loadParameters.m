@@ -12,15 +12,18 @@ if numel(varargin) > 0
     queryKeyArray = varargin{1};
     %Reference based on numerical index
     if isnumeric(queryKeyArray)
-        if all(queryKeyArray > 0) && all(queryKeyArray <= numel(ParamsAllMovies))
+        queryWithinBounds = all(queryKeyArray > 0 & ...
+                           queryKeyArray <= numel(ParamsAllMovies));
+        if queryWithinBounds
             movieId = queryKeyArray;
         elseif any(queryKeyArray <= 0)
             error('numeric movie ID must be nonnegative index');
         elseif any(queryKeyArray > numel(ParamsAllMovies))
             error('movie ID exceeds range of database');
         end
+        
     %Reference based on string key
-    elseif ischar(queryKeyArray) || iscellstr(queryKeyArray)
+    elseif iscellstr(queryKeyArray)
         % Check for a movieName field to match to key
         if isfield(ParamsAllMovies,'movieName')
             assert(ischar(ParamsAllMovies(1).movieName),...
@@ -33,6 +36,7 @@ if numel(varargin) > 0
         
         % Check that all queried keys are found
         queryKeyIsFound = ismember(queryKeyArray, allKeys);
+        % Check which keys in the database were queried
         keyIsQueried    = ismember(allKeys, queryKeyArray);
         
             
@@ -40,16 +44,9 @@ if numel(varargin) > 0
             movieId     = find(keyIsQueried);
             
         else
-            if ischar(queryKeyArray)
-                missingKeys = queryKeyArray;
-                error('Missing key: %s\n',missingKeys)
-                
-            elseif iscellstr(queryKeyArray)
-                missingKeys = queryKeyArray(~queryKeyIsFound);
-                error('Missing key: %s\n',missingKeys{:})
-                
-            end
-            
+            missingKeys = queryKeyArray(~queryKeyIsFound);
+            error('Missing key: %s\n',missingKeys{:})
+
         end
         
     else
@@ -61,6 +58,7 @@ end
 
 ParamsSelectedMovies = ParamsAllMovies(movieId);
 ParamsSelectedMoviesCellArray = cell(size(ParamsSelectedMovies));
+
 %% Error checking
 for k = 1:numel(ParamsSelectedMovies)
     
@@ -70,10 +68,27 @@ checkRequiredField(Params,                                  ...
                    'inputPathName',                         ...
                    @(x) logical(exist(x,'dir')));
 
-% outputPathName
-checkRequiredField(Params,                                  ...
-                   'outputPathName',                        ...
-                   @(x) logical(exist(x,'dir')));
+% outputPathName - create if it's in same folder as input path
+try
+    checkRequiredField(Params,                              ...
+                       'outputPathName',                    ...
+                       @(x) logical(exist(x,'dir')),        ...
+                       'directory does not exist');
+catch errorMsg
+    if strfind(errorMsg.message,'Error: invalid')
+        inputParentDirectory      = fileparts(Params.inputPathName );
+        [outputParentDirectory,...
+         outputDirectoryName,~]   = fileparts(Params.outputPathName);
+        
+        if strcmp(inputParentDirectory,outputParentDirectory)
+            mkdir(outputParentDirectory,outputDirectoryName)
+        else
+            rethrow(errorMsg);
+        end
+    else
+        rethrow(errorMsg);
+    end
+end
 
 % inputFileName
 checkRequiredField(Params,'inputFileName',                  ...
@@ -192,12 +207,19 @@ end
 end
 function checkRequiredField(Params,                         ...
                             fieldToCheck,                   ...
-                            testFunction)
+                            testFunction,                   ...
+                            varargin)
+    if numel(varargin)>0
+        optionalErrorString = varargin{1};
+    else
+        optionalErrorString = '';
+    end
     if isfield(Params,fieldToCheck)
         assert(testFunction(Params.(fieldToCheck)),         ...
-               'Error: invalid %s "%s"',                    ...
+               'Error: invalid %s "%s" %s',                 ...
                fieldToCheck,                                ...
-               Params.(fieldToCheck));
+               Params.(fieldToCheck),                       ...
+               optionalErrorString);
     else
         error('Missing field: file has no field "%s"',fieldToCheck);
     end

@@ -8,7 +8,7 @@ function detectedPointArray = detectNewPointsInRoi(frame,roiIndex,Params)
 
 imageSize = size(frame);
 gridSize  = Params.nRois;
-roiSize   = floor(imageSize./gridSize);
+roiSize   = floor(imageSize./double(gridSize));
 EdgePositionsAlongDimension = createGridForArray(roiSize,imageSize);
 
 %Generate crop window from bin coordinates

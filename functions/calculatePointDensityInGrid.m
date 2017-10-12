@@ -17,9 +17,11 @@ function pointDensityPerRoi = calculatePointDensityInGrid(coordinatesArray,...
  RoiLengthsAlongDimension,...
  nRoisAlongDimension]            = createGridForArray(roiSize,imageSize);
 
-%Compute number of pixels in each bin by an outer product 
-%(remember row-col orientation vs xy orientation)
-nPixelsPerRoi = RoiLengthsAlongDimension{1}' * RoiLengthsAlongDimension{2};
+% Compute number of pixels in each bin by an outer product 
+% (remember row-col orientation vs xy orientation).
+% Lengths need to be double for matrix multiplication
+nPixelsPerRoi = double(RoiLengthsAlongDimension{1}') *...
+                double(RoiLengthsAlongDimension{2});
 
 
 % Determine which ROI each point falls into based on which bin its X and Y
