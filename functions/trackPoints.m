@@ -1,4 +1,4 @@
-function TrackedPointStruct = trackPoints(reader,Params)
+function trackingResult = trackPoints(reader,Params,varargin)
 %%% Track points
 
 %Initialize stuff
@@ -9,8 +9,8 @@ waitbarHandle = waitbar(0,'Initializing...');
 %%
 %For testing purposes, choose an earlier point than the end of the movie to
 %stop.
-if (Params.finalFrameForTesting > 0)
-    finalFrame = Params.finalFrameForTesting;
+if nargin > 2
+    finalFrame = varargin{1};
 else
     finalFrame = sizeT;
 end
@@ -41,6 +41,11 @@ for iT = 2:finalFrame
     end
 end
 close(waitbarHandle)
+
+trackingResult.TrackedPointStruct = TrackedPointStruct;
+trackingResult.Params             = Params;
+trackingResult.reader             = reader;
+trackingResult.finalFrame         = finalFrame;
 end
        
         
