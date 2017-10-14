@@ -1,5 +1,5 @@
 function plotTrackedPoints(trackingResult,...
-                           movieFileName, ...
+                           moviePrefix, ...
                            varargin)
 % plotTrackedPoints: overlay points from point tracking onto the movie that
 % they were tracked from. 
@@ -32,6 +32,8 @@ if numel(varargin)>0
 else %default formatting of markers
     plotFormatSpecs = {'+','Color','Green'};
 end
+
+movieFileName = sprintf('%s_plottracking.tif',moviePrefix);
 
 saveMovieFileName = initAppendFile(fullfile(Params.outputPathName,...
                                             movieFileName));

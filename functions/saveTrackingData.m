@@ -1,46 +1,34 @@
-%function saveTrackingData(trackingResult,csvFileName)
+function saveTrackingData(TrackingResult,csvFileName,movieKey,varargin)
+parser = inputParser;
+addParameter(parser,'incrementSaveNames',1,...
+             @(x)validateattributes(x,{'numeric','logical'},{'binary'}));
+parse(parser,varargin{:});
+incrementSaveNames = parser.Results.incrementSaveNames;
 
 % Unpack trackingResult
-TrackedPointStruct = trackingResult.TrackedPointStruct;
-Params             = trackingResult.Params;
-reader             = trackingResult.Reader;
-finalFrame         = trackingResult.finalFrame;
+TrackedPointStruct = TrackingResult.TrackedPointStruct;
+Params             = TrackingResult.Params;
+finalFrame         = TrackingResult.finalFrame;
 
 saveDirectory      = Params.outputPathName;
+if incrementSaveNames
+    moviePrefix = generateSaveNamePrefix(saveDirectory,...
+                                         movieKey);
+else
+    moviePrefix = movieKey;
+end
+
+%% Save the tracking data itself
+dataSaveName = fullfile(saveDirectory,...
+                        sprintf('%s_trackingData.mat',moviePrefix));
+save(dataSaveName,'TrackingResult');
 
 %% Save a human-readable form of the Params
-fileId               = fopen(csvFileName);
-headerLine           = textscan(fileId,'%s',1,'delimiter','\n');
-fclose(fileId);
+paramsSaveName = fullfile(saveDirectory,...
+                          sprintf('%s_parameterValues.txt',moviePrefix));
+saveParameterValues(paramsSaveName,Params,finalFrame,csvFileName);
 
-originalFieldNames   = strsplit(headerLine{1}{1},',');
-currentFieldNames    = fieldnames(Params);
-addedFieldNames      = setdiff(currentFieldNames,originalFieldNames);
-
-ParamsForWriting     = rmfield(Params,addedFieldNames);
-fieldNamesForWriting = fieldnames(ParamsForWriting);
-% Find the largest string length
-fieldNameLength      = max(cellfun(@(a)numel(a),...
-                           fieldNamesForWriting)) + 3;
-fid = fopen('testWrite.txt','w');
-for k = 1:numel(fieldNamesForWriting)
-    valueToWrite = Params.(fieldNamesForWriting{k});
-    dataType = class(valueToWrite);
-    
-    switch dataType
-        case 'char'
-            formatSpecifier = 's';
-        case 'datetime'
-            formatSpecifier = 's';
-            valueToWrite      = datestr(valueToWrite,'yyyy-mm-dd');
-        otherwise
-            formatSpecifier = 'd';
-    end
-    
-    formatString = sprintf('%%-%is%%%s\n',fieldNameLength,formatSpecifier);
-    %lineToWrite  = sprintf(formatString,fieldNamesForWriting{k},valueToWrite);
-    fprintf(fid,formatString,fieldNamesForWriting{k},valueToWrite);
-end
-formatString = sprintf('%%-%is%%d',fieldNameLength);
-fprintf(fid,formatString,'finalFrame',finalFrame);
-fclose(fid);
+%% Save a frame-by-frame summary of the tracking data
+summarySaveName = fullfile(saveDirectory,...
+                           sprintf('%s_trackingSummary.csv',moviePrefix));
+saveTrackingSummary(summarySaveName,TrackedPointStruct);

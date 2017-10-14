@@ -11,12 +11,16 @@ waitbarHandle = waitbar(0,'Initializing...');
 %stop.
 if nargin > 2
     finalFrame = varargin{1};
+    if finalFrame == 0
+        finalFrame = sizeT;
+    end
 else
     finalFrame = sizeT;
 end
 
 %LOOP THROUGH MOVIE
 for iT = 2:finalFrame
+    try
     progress = iT / finalFrame;
     waitbar(progress,waitbarHandle,...
             sprintf('Tracking frames, %d%% completed...',progress*100));
@@ -34,10 +38,16 @@ for iT = 2:finalFrame
                      mod(iT,Params.pointUpdateInterval) == 0;
     if updateRequired
        disp(iT)       
-       TrackedPointStruct(iT) = updatePoints(TrackedPointStruct(iT),...
+       TrackedPointStruct(iT) = updatePoints(TrackedPointStruct(iT),  ...
                                 thisFramePreprocessed,Params);
-       setPoints(tracker,single(TrackedPointStruct(iT).coordinates),...
+       setPoints(tracker,single(TrackedPointStruct(iT).coordinates),  ...
                                 TrackedPointStruct(iT).isTracked);
+    end
+    
+    catch errorMessage
+        close(waitbarHandle)
+        rethrow(errorMessage)
+        
     end
 end
 close(waitbarHandle)
