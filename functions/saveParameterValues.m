@@ -8,41 +8,56 @@ function saveParameterValues(saveName,Params,finalFrame,csvFileName)
 % - csvFileName: Path to the database where all the params are stored (used
 %                to get headers
 % - saveName: filename (with appropriate path) to save the data
+% - finalFrame: the final analyzed frame of the movie
 
 fileId               = fopen(csvFileName);
-headerLine           = textscan(fileId,'%s',1,'delimiter','\n');
+headerLines           = textscan(fileId,'%s',2,'delimiter','\n');
 fclose(fileId);
 
-originalFieldNames   = strsplit(headerLine{1}{1},',');
+originalFieldNames   = strsplit(headerLines{1}{1},',');
+originalDataTypes    = strsplit(headerLines{1}{2},',');
 currentFieldNames    = fieldnames(Params);
 addedFieldNames      = setdiff(currentFieldNames,originalFieldNames);
 
 ParamsForWriting     = rmfield(Params,addedFieldNames);
 fieldNamesForWriting = fieldnames(ParamsForWriting);
-% Find the largest string length
-fieldNameLength      = max(cellfun(@(a)numel(a),...
-                           fieldNamesForWriting)) + 3;
+dataTypesForWriting  = cell(size(fieldNamesForWriting));
+
+% Get the data type for each parameter in the reduced list
+for n = 1:numel(fieldNamesForWriting)
+    index                  = find(strcmp(fieldNamesForWriting{n},...
+                                         originalFieldNames),1);
+    dataTypesForWriting{n} = originalDataTypes{index};
+end
 
 fid = fopen(saveName,'w');
-for k = 1:numel(fieldNamesForWriting)
-    valueToWrite = Params.(fieldNamesForWriting{k});
-    dataType = class(valueToWrite);
-    
+lineFormat = [repmat('%s,',1,numel(fieldNamesForWriting)),'%s\n'];
+%Write the field names
+fprintf(fid,lineFormat,fieldNamesForWriting{:},'finalFrame');
+%Write the datatypes
+fprintf(fid,lineFormat,dataTypesForWriting{:},'f');
+
+%Get the format specifier for all the parameter values
+lineFormat = [];
+for n = 1:numel(fieldNamesForWriting)
+    valueToWrite = ParamsForWriting.(fieldNamesForWriting{n});
+    dataType     = class(valueToWrite);
     switch dataType
         case 'char'
-            formatSpecifier = 's';
+            nextSpecifier = '%s,';
         case 'datetime'
-            formatSpecifier = 's';
-            valueToWrite      = datestr(valueToWrite,'yyyy-mm-dd');
+            nextSpecifier = '%s,';
+            ParamsForWriting...
+             .(fieldNamesForWriting{n})  = datestr(valueToWrite,'yyyy-mm-dd');
         otherwise
-            formatSpecifier = 'd';
+            nextSpecifier = '%d,';
     end
-    
-    formatString = sprintf('%%-%is%%%s\n',fieldNameLength,formatSpecifier);
-
-    fprintf(fid,formatString,fieldNamesForWriting{k},valueToWrite);
+    lineFormat  = [lineFormat nextSpecifier];
 end
-formatString = sprintf('%%-%is%%d',fieldNameLength);
-fprintf(fid,formatString,'finalFrame',finalFrame);
+lineFormat      = [lineFormat '%d']; %add finalFrame at the end
+paramValues     = struct2cell(ParamsForWriting);
+%Print the parameter values
+fprintf(fid,lineFormat,paramValues{:},finalFrame);
+
 fclose(fid);
 end
