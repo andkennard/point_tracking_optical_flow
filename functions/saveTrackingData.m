@@ -25,10 +25,18 @@ save(dataSaveName,'TrackingResult');
 
 %% Save a human-readable form of the Params
 paramsSaveName = fullfile(saveDirectory,...
-                          sprintf('%s_parameterValues.txt',moviePrefix));
+                          sprintf('%s_parameterValues.csv',moviePrefix));
 saveParameterValues(paramsSaveName,Params,finalFrame,csvFileName);
 
 %% Save a frame-by-frame summary of the tracking data
 summarySaveName = fullfile(saveDirectory,...
                            sprintf('%s_trackingSummary.csv',moviePrefix));
 saveTrackingSummary(summarySaveName,TrackedPointStruct);
+
+%% Save a movie of the tracking results
+disp('plotting tracking data...')
+plottingSaveName = fullfile(saveDirectory,...
+                            sprintf('%s_plotTrackingResult.tif',moviePrefix));
+plotTrackedPoints(plottingSaveName,TrackingResult);
+
+end
