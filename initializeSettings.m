@@ -8,12 +8,13 @@ function trackingSettings = initializeSettings()
 % experiments
 movieDatabase = ['/Users/andrewkennard/Code/'...
                  'point_tracking_optical_flow/parameter_files/'...
-                 'point_tracking_parameters.csv'];
+                 'example_point_tracking_parameters.csv'];
 
 % movieKeyArray: A cell array of strings or a vector of indexes of which
 % movies in the movieDatabase file should be run through the algorithm
 % E.g. movieKeyArray = [1:5 7 10]; or 
-% movieKeyArray = {'WT','blebbistatin'};
+% movieKeyArray = {'WT','blebbistatin'}; or
+% movieKeyArray = {'testMovie'}
 movieKeyArray = 1;
 
 %% Optional Name-Value pairs
