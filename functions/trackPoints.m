@@ -17,6 +17,10 @@ parse(parser,varargin{:});
 finalFrame = parser.Results.finalFrame;
 if finalFrame == 0;
     finalFrame = sizeT;
+elseif finalFrame >= sizeT
+    warning(['finalFrame was larger than the movie length; '...
+             'using movie length instead']);
+    finalFrame = sizeT;
 end
 
 
@@ -57,6 +61,16 @@ trackingResult.TrackedPointStruct = TrackedPointStruct;
 trackingResult.Params             = Params;
 trackingResult.reader             = reader;
 trackingResult.finalFrame         = finalFrame;
+
+if Params.trackMargin
+    [interiorCoordinateArray,...
+     marginCoordinateArray] = makeCoordinateArrayWithMargin(TrackedPointStruct);
+    trackingResult.coordinateArray       = interiorCoordinateArray;
+    trackingResult.marginCoordinateArray = marginCoordinateArray;
+else
+    trackingResult.coordinateArray = makeCoordinateArray(TrackedPointStruct);
+end
+
 end
        
         

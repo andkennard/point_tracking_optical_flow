@@ -11,7 +11,7 @@ function saveParameterValues(saveName,Params,finalFrame,csvFileName)
 % - finalFrame: the final analyzed frame of the movie
 
 fileId               = fopen(csvFileName);
-headerLines           = textscan(fileId,'%s',2,'delimiter','\n');
+headerLines          = textscan(fileId,'%s',2,'delimiter','\n');
 fclose(fileId);
 
 originalFieldNames   = strsplit(headerLines{1}{1},',');
@@ -31,11 +31,11 @@ for n = 1:numel(fieldNamesForWriting)
 end
 
 fid = fopen(saveName,'w');
-lineFormat = [repmat('%s,',1,numel(fieldNamesForWriting)),'%s\n'];
+lineFormat = [repmat('%s,',1,numel(fieldNamesForWriting)),'%s,%s\n'];
 %Write the field names
-fprintf(fid,lineFormat,fieldNamesForWriting{:},'finalFrame');
+fprintf(fid,lineFormat,fieldNamesForWriting{:},'finalFrame','parameter_file');
 %Write the datatypes
-fprintf(fid,lineFormat,dataTypesForWriting{:},'f');
+fprintf(fid,lineFormat,dataTypesForWriting{:},'f','s');
 
 %Get the format specifier for all the parameter values
 lineFormat = [];
@@ -54,10 +54,10 @@ for n = 1:numel(fieldNamesForWriting)
     end
     lineFormat  = [lineFormat nextSpecifier];
 end
-lineFormat      = [lineFormat '%d']; %add finalFrame at the end
+lineFormat      = [lineFormat '%d,%s']; %add finalFrame and %parameter file at the end
 paramValues     = struct2cell(ParamsForWriting);
 %Print the parameter values
-fprintf(fid,lineFormat,paramValues{:},finalFrame);
+fprintf(fid,lineFormat,paramValues{:},finalFrame,csvFileName);
 
 fclose(fid);
 end

@@ -7,7 +7,6 @@ function Params = loadParametersFromCsv(csvFilename)
 %   the field names. 
 % - The second row contains the string of the format specified (e.g. s or u
 %   for the data in that column, which will be parsed by textscan)
-
 fileId = fopen(csvFilename);
 
 % Read the first line to get the field names
