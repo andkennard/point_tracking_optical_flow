@@ -27,28 +27,22 @@ Params              = trackingResult.Params;
 finalFrame          = trackingResult.finalFrame;
 TrackedPointStruct  = trackingResult.TrackedPointStruct;
 
-if numel(varargin)>0
-    plotFormatSpecs = varargin{1};
-else %default formatting of markers
-    plotFormatSpecs = {'+','Color','Green'};
-end
+%Get optional specifications for formatting the markers
+parser         = inputParser;
+addParameter(parser,'plotFormatSpecs',{},@(x)iscell(x));
+parse(parser);
+plotFormatSpecs = parser.Results.plotFormatSpecs;
 
 for iT = 1:finalFrame
     frame = bf_getFrame(reader,1,1,iT);
     frame = double(Params.preprocessImage(frame));
     frame = uint8((255/(max(frame(:)) - min(frame(:)))) * (frame - min(frame(:))));
     
-    if isfield(TrackedPointStruct,'isMargin')
-        trackedPointArray = TrackedPointStruct(iT).coordinates(...
-                            TrackedPointStruct(iT).isTracked & ...
-                           ~TrackedPointStruct(iT).isMargin,:);
-    else
-        trackedPointArray = TrackedPointStruct(iT).coordinates(...
-                            TrackedPointStruct(iT).isTracked,:);
-    end
+    trackedPointArray = TrackedPointStruct(iT).coordinates(...
+                        TrackedPointStruct(iT).isTracked, : );
                          
-    frameMarked = insertMarker(frame,                    ...
-                               trackedPointArray,...
+    frameMarked = insertMarker(frame,                      ...
+                               trackedPointArray,          ...
                                plotFormatSpecs{:});
                            
     imwritemulti(frameMarked,saveMovieFileName);

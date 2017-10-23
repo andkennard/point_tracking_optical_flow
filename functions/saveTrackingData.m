@@ -1,9 +1,19 @@
-function saveTrackingData(TrackingResult,csvFileName,movieKey,varargin)
+function plotFormatSpecs = saveTrackingData(TrackingResult,csvFileName,movieKey,varargin)
 parser = inputParser;
-addParameter(parser,'incrementSaveNames',1,...
-             @(x)validateattributes(x,{'numeric','logical'},{'binary'}));
+addParameter(parser,'incrementSaveNames',     1,                       ...
+             @(x)validateattributes(x,{'numeric','logical'},           ...
+                                      {'binary'}));
+                                  
+addParameter(parser,'plotFormatSpecs',       {},                       ...
+             @(x)iscell(x));
+         
+addParameter(parser,'plotMarginFormatSpecs', {},                       ...
+             @(x)iscell(x));
+         
 parse(parser,varargin{:});
-incrementSaveNames = parser.Results.incrementSaveNames;
+incrementSaveNames    = parser.Results.incrementSaveNames;
+plotFormatSpecs       = parser.Results.plotFormatSpecs;
+plotMarginFormatSpecs = parser.Results.plotMarginFormatSpecs;
 
 % Unpack trackingResult
 TrackedPointStruct = TrackingResult.TrackedPointStruct;
@@ -33,10 +43,28 @@ summarySaveName = fullfile(saveDirectory,...
                            sprintf('%s_trackingSummary.csv',moviePrefix));
 saveTrackingSummary(summarySaveName,TrackedPointStruct);
 
+%% Save a matrix of the coordinates
+coordinateArraySaveName = fullfile(saveDirectory,...
+                           sprintf('%s_coordinateArray.mat',moviePrefix));
+coordinateArray         = TrackingResult.coordinateArray;
+if Params.trackMargin
+    marginCoordinateArray   = TrackingResult.marginCoordinateArray;
+    save(coordinateArraySaveName,'coordinateArray','marginCoordinateArray');
+else
+    save(coordinateArraySaveName,'coordinateArray');
+end
+
 %% Save a movie of the tracking results
 disp('plotting tracking data...')
 plottingSaveName = fullfile(saveDirectory,...
                             sprintf('%s_plotTrackingResult.tif',moviePrefix));
-plotTrackedPoints(plottingSaveName,TrackingResult);
+if Params.trackMargin
+    plotTrackedPointsWithMargin(plottingSaveName,TrackingResult,        ...
+                                'plotFormatSpecs',      plotFormatSpecs,...
+                                'plotMarginFormatSpecs',plotMarginFormatSpecs);
+else
+    plotTrackedPoints(plottingSaveName,TrackingResult,...
+                      'plotFormatSpecs',plotFormatSpecs);
+
 
 end
